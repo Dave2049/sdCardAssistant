@@ -11,15 +11,15 @@ def getRcLocalContent():
     
 def getScriptLine(content):
     for line in content:
-        if ('python3 /home/pi/Documents/init.py &' in line):
+        if ('python3 /home/pi/git-repos/sdCardAssistant/init.py &' in line):
             return content.index(line)
 
 def getNewContent(index, content):
     if('#' in content[index]):
-        content[index] = 'python3 /home/pi/Documents/init.py &\n'
+        content[index] = 'python3 /home/pi/git-repos/sdCardAssistant/init.py &\n'
         print('script activated')
     else:
-        content[index] = '# python3 /home/pi/Documents/init.py &\n'
+        content[index] = '# python3 /home/pi/git-repos/sdCardAssistant/init.py &\n'
         print('script deactivated')
     return content
 
@@ -31,7 +31,9 @@ def writeNewContent(newContent):
 
 def main():
     content = getRcLocalContent()
+    print(content)
     scriptIndex = getScriptLine(content)
+    print(str(scriptIndex))
     newContent = getNewContent(int(scriptIndex),content)
     writeNewContent(newContent)
 

@@ -32,8 +32,6 @@ def secLoop():
                 if(os.path.isfile(controlNrFile)):                 
                     controlNr = str(controllNr.generateControlNR(cards))
                     print(controlNr)
-                    print("___")
-                    print(getControllNrFromHDD())
                     if(controlNr not in getControllNrFromHDD()):
                         print("__")
                         print("new CR found")
@@ -59,7 +57,6 @@ def checkSocketError():
     return False
 
 def getSDcardCount(cardPathList):
-    
     activeCards=[]
     for cards in cardPathList:
         if os.path.isdir(cards):

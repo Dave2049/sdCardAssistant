@@ -61,24 +61,32 @@ def getIndexOfType(typeM,folderList):
 
 def containsMOV(photoList):
     for foto in photoList:
-        if(".Mov" in foto):
+        if("Video" in getFileType(foto)):
             return True
     return False
+
+def containsPIC(photoList):
+    for foto in photoList:
+        if("Fotos" in getFileType(foto)):
+            return True
+    return False
+
 
 def organizeFolderList(folder,dest,author,photoList,folderList,cardPath,hddPath):   
      folderNewPic = PurePath(createFolderByDate(folder, dest,author,"Fotos",cardPath,hddPath))
      folderNewMOV = PurePath(createFolderByDate(folder, dest,author,"Video",cardPath,hddPath))        
-     if(not containsMOV(photoList) and folderNewPic not in folderList):
+     if(containsPIC(photoList) and folderNewPic not in folderList):
         folderList.append(folderNewPic)
      if(containsMOV(photoList) and folderNewMOV not in folderList):
         folderList.append(folderNewMOV)
+     print(folderList)
      return folderList
 
 
 def copyPictures(cardPathString,hddPathString):
     cardPath = PurePath(cardPathString)
+    print(cardPathString)
     hddPath= PurePath(hddPathString)
-  
     photoFolders = os.listdir(cardPathString)
     startI = time.time()
     folderList = []
@@ -97,14 +105,19 @@ def copyPictures(cardPathString,hddPathString):
         for photo in photoList:
             curPhoto = pathlib.Path(cardPath.joinpath(folder).joinpath(photo))
             newDest = getFotoDestination(datetime.fromtimestamp(curPhoto.stat().st_mtime))
+            print(photo)
+            print(getFileType(photo))
             if(newDest is not dest):
                 folderList = organizeFolderList(folder, newDest, author, photoList, folderList, cardPath, hddPath)
                 dest = newDest
             if(getFileType(photo).__eq__("Fotos")):
                 mediaArt="Fotos"
+                print(folderList)
                 if("Video" in str(folderList[-1])):
+                    print("foundVideo")
                     folderList.insert(-3, folderList[-1])
                     folderList.pop(-1)
+                print(folderList[-1])
             elif("Fotos" in str(folderList[-1])):
                 mediaArt="Video" 
                 index = getIndexOfType('Video',folderList)
