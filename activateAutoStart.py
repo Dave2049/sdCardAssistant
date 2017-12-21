@@ -31,9 +31,7 @@ def writeNewContent(newContent):
 
 def main():
     content = getRcLocalContent()
-    print(content)
     scriptIndex = getScriptLine(content)
-    print(str(scriptIndex))
     newContent = getNewContent(int(scriptIndex),content)
     writeNewContent(newContent)
 
