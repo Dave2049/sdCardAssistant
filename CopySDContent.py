@@ -13,6 +13,7 @@ import pathlib
 from pathlib import PurePath
 from copy import copy
 from _tracemalloc import start
+import mountHelper
 
 fotoDestination = 'Default'
 
@@ -83,8 +84,14 @@ def organizeFolderList(folder,dest,author,photoList,folderList,cardPath,hddPath)
 
 
 def copyPictures(cardPathString,hddPathString):
+   # uuidSD= devices.keys()[list(devices.values()).index(sdCardpathSTR)]
+    #uuidhdd= "726021E86021B42F"
+    #mountHelper.umountAll()
+   # mountHelper.mount()
     cardPath = PurePath(cardPathString)
     print(cardPathString)
+    
+
     hddPath= PurePath(hddPathString)
     photoFolders = os.listdir(cardPathString)
     startI = time.time()

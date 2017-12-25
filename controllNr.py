@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 import os
 import pathlib
+import mountHelper
 
-def generateControlNR(sdCardpathSTR):
+def generateControlNR(sdCardpathSTR,devices):
+    #uuid= devices.keys()[list(devices.values()).index(sdCardpathSTR)]
+    #mountHelper.mount(uuid)
     sdCardpath = pathlib.PurePath(sdCardpathSTR)
     if(os.path.isdir(str(sdCardpath))): 
         FolderList = os.listdir(str(sdCardpath))
         imgList= []
         controllNr = 0;
         for folder in FolderList:
-            for obj in os.listdir(str(sdCardpath)+"/"+folder) :
-                
+            for obj in os.listdir(str(sdCardpath)+"/"+folder) :           
                 img = obj.split("DSCF")[1]
                 imgList.append(img.split('.')[0]);
         for name in imgList:
@@ -19,6 +21,7 @@ def generateControlNR(sdCardpathSTR):
         return controllNr
        
 def writeNewControlNR(controlNr,controlNrFile):
+   # mountHelper.mount('726021E86021B42F')
     if(os.path.isfile(controlNrFile)):
         file = open(controlNrFile,'r')
         lines = file.readlines()
@@ -31,3 +34,4 @@ def writeNewControlNR(controlNr,controlNrFile):
         file = open(controlNrFile,'a')
         file.write(str(controlNr)+'\n')
         file.close
+   # mountHelper.umount('726021E86021B42F')

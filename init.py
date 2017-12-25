@@ -6,6 +6,7 @@ import controllNr
 import emailHelper
 import CopySDContent
 import datetime
+import mountHelper
 
 hddPath='/home/pi/mnt/usb'
 sdCard1='/home/pi/mnt/sdCard/DCIM'
@@ -16,6 +17,7 @@ controlNrFile=hddPath+'/ConfQuatsch/controllNr'
 def secLoop():
     socketError=False
     lastCheck = time.time()/60
+    
     try:
         emailHelper.sendMail('scriptStarted', 'TEST')
     except Exception:
@@ -25,14 +27,18 @@ def secLoop():
     cardPathList.append(sdCard1)
     cardPathList.append(sdCard2)    
     while True:
-        sdCards = getSDcardCount(cardPathList)
-        if(os.path.isdir(hddPath)):           
+        mountHelper.umountALL()
+        devices = mountHelper.matchUUIdAndMP()
+        sdCards = getSDcardCount(devices.values())
+        if(hddPath in devices.values()):           
             for cards in sdCards:
                 print(cards)
-                if(os.path.isfile(controlNrFile)):                 
-                    controlNr = str(controllNr.generateControlNR(cards))
+                if(True):
+                    mountHelper.mountALL()
+                    controlNr = str(controllNr.generateControlNR(cards,devices))
                     print(controlNr)
                     if(controlNr not in getControllNrFromHDD()):
+                        
                         print("__")
                         print("new CR found")
                         if(not socketError):
@@ -44,11 +50,13 @@ def secLoop():
                             except Exception:
                                 socketError=True
                         controllNr.writeNewControlNR(controlNr,controlNrFile)
+        mountHelper.umountALL()
         pause=+30
         timeNow = time.time()/60
         if(timeNow-lastCheck>5&socketError):
             lastCheck=time.time()
             socketError = checkSocketError()
+        
         time.sleep(30)
 
 def checkSocketError():
@@ -59,11 +67,12 @@ def checkSocketError():
         return True
     return False
 
+
 def getSDcardCount(cardPathList):
     activeCards=[]
     for cards in cardPathList:
-        if os.path.isdir(cards):
-            activeCards.append(cards)
+        if cards in cardPathList and "usb" not in cards:
+            activeCards.append(cards+"/DCIM")
     return activeCards
 
 def getControllNrFromHDD():
@@ -77,10 +86,12 @@ def getStringsFromFolderList(folderList):
     return listString
 
 def generateMail(folderList, fotoCount):
+    print("email start")
     timeStamp = time.time()
     timerTitel = datetime.datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:')
     Titel ="SDCard Report "+str(timerTitel)
     Message="Hey David, \ndeine Fotos wurden Kopiert. \nFolgende Ordner wurden verwenden: "+ getStringsFromFolderList(folderList) +".\n"+ str(fotoCount)+" Fotos wurden kopiert."
     emailHelper.sendMail(Titel, Message)     
-
+    print("emailFinished")
+    
 secLoop()

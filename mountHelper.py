@@ -1,10 +1,45 @@
-import ctypes
 import os
+import subprocess
 
-def mount(source, target, fs,options=''):
-	ret = ctypes.CDLL('libc.so.6', use_errno=True).mount(source, target, fs, 0, options)
-	if(ret < 0):
-		errno = ctypes.get_errno()
-		raise RuntimeError('Error mounting')
+def getUUIDs():
+        devices=os.popen("blkid").readlines()
+        uuiDList= []
+        for device in devices:
+                for attribute in device.split(" "):
+                        if("UUID" in attribute and "P" not in attribute):
+                              uuidS=attribute.split("=\"")[1]
+                              uuid= ''.join( c for c in uuidS if c not in "\"")
+                              uuiDList.append(uuid)
+        return uuiDList
 
-mount('/dev/sdb1','mnt/sdCard','exfat','-o uid=pi,gid=pi')
+def matchUUIdAndMP():
+        UUIDS = getUUIDs()
+        mount = {}
+        for uuid in UUIDS:
+                if(uuid == "726021E86021B42F"):
+                        mount.update({uuid: "/home/pi/mnt/usb"})
+                elif(uuid == "94BA-0FFE"):
+                        mount.update({uuid: "/home/pi/mnt/sdCard"})
+                elif(uuid == "C224-7ACC"):
+                        mount.update({uuid: "/home/pi/mnt/sdCard2"})
+        return mount
+
+
+        
+def umountALL():
+        mounts = matchUUIdAndMP()
+        for uuid in mounts:
+                os.system("umount UUID=\""+uuid+"\"")
+        print("umountComplete")
+        
+def mount(uuid):
+        mounts = matchUUIdAndMP()
+        os.system("mount UUID=\""+uuid+"\""+" "+mount[uuid])
+
+def umount(uuid):
+        os.system("umount UUID=\""+uuid+"\"")
+   
+def mountALL():
+        mounts = matchUUIdAndMP()
+        for uuid in mounts:
+                os.system("mount UUID=\""+uuid+"\""+" "+mounts[uuid])
