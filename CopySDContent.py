@@ -79,7 +79,6 @@ def organizeFolderList(folder,dest,author,photoList,folderList,cardPath,hddPath)
         folderList.append(folderNewPic)
      if(containsMOV(photoList) and folderNewMOV not in folderList):
         folderList.append(folderNewMOV)
-     print(folderList)
      return folderList
 
 
@@ -105,19 +104,14 @@ def copyPictures(cardPathString,hddPathString):
         for photo in photoList:
             curPhoto = pathlib.Path(cardPath.joinpath(folder).joinpath(photo))
             newDest = getFotoDestination(datetime.fromtimestamp(curPhoto.stat().st_mtime))
-            print(photo)
-            print(getFileType(photo))
             if(newDest is not dest):
                 folderList = organizeFolderList(folder, newDest, author, photoList, folderList, cardPath, hddPath)
                 dest = newDest
             if(getFileType(photo).__eq__("Fotos")):
                 mediaArt="Fotos"
-                print(folderList)
                 if("Video" in str(folderList[-1])):
-                    print("foundVideo")
                     folderList.insert(-3, folderList[-1])
                     folderList.pop(-1)
-                print(folderList[-1])
             elif("Fotos" in str(folderList[-1])):
                 mediaArt="Video" 
                 index = getIndexOfType('Video',folderList)
@@ -139,7 +133,6 @@ def copyPictures(cardPathString,hddPathString):
             photoPath = folderList[-1].joinpath(photo)
             if(not os.path.isfile(str(photoPath))):
                 shutil.copy(str(cardPath.joinpath(folder).joinpath(photo)), str(folderList[-1]))
-                print(photo+ "/"+ str(folderList[-1]))
                 copyCount += 1
                 if(folderNEW not in finalFotoList):
                     finalFotoList.append(folderNEW)

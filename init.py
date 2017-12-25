@@ -7,9 +7,9 @@ import emailHelper
 import CopySDContent
 import datetime
 
-hddPath='/media/pi/Seagate Expansion Drive'
-sdCard1='/media/pi/94BA-0FFE/DCIM'
-sdCard2='/media/pi/C224-7ACC/DCIM'
+hddPath='/home/pi/mnt/usb'
+sdCard1='/home/pi/mnt/sdCard/DCIM'
+sdCard2='/home/pi/mnt/sdCard2/DCIM'
 controlNrFile=hddPath+'/ConfQuatsch/controllNr'
 
 
@@ -35,6 +35,8 @@ def secLoop():
                     if(controlNr not in getControllNrFromHDD()):
                         print("__")
                         print("new CR found")
+                        if(not socketError):
+                            generateMail("Service is about to Start","Test")
                         reportData = CopySDContent.copyPictures(cards,hddPath)
                         if(not socketError):
                             try:
@@ -50,6 +52,7 @@ def secLoop():
         time.sleep(30)
 
 def checkSocketError():
+    print("checkSE")
     try:
         emailHelper.sendMail('Socket Test', 'TEST')
     except Exception:

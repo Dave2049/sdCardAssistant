@@ -10,7 +10,7 @@ def generateControlNR(sdCardpathSTR):
         controllNr = 0;
         for folder in FolderList:
             for obj in os.listdir(str(sdCardpath)+"/"+folder) :
-                print(folder+":"+obj)
+                
                 img = obj.split("DSCF")[1]
                 imgList.append(img.split('.')[0]);
         for name in imgList:
